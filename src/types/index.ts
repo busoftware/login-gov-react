@@ -7,6 +7,7 @@ export type {
   IGetTokenSilentlyVerboseResponse,
   IGovLoginContextInterface,
   IGovLoginContextInterfaceOptions,
+  ILogoutOptions,
 } from "./auth";
 
 export type { IAnyObject, IAppState, IdToken, IStringObject } from "./common";

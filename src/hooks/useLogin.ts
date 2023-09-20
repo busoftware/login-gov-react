@@ -6,7 +6,12 @@ import { useEffect, useState } from "react";
 import useStorage from "./useStorage";
 
 /** Help */
-import { buildQueryString, generateRandomHash } from "../components/utils";
+import {
+  buildQueryString,
+  generateCodeVerifier,
+  generateCodeChallengeFromVerifier,
+  generateRandomString,
+} from "../components/utils";
 
 /** Enums */
 import { AsyncStorageKey, AuthType } from "../types";
@@ -54,16 +59,17 @@ const useLogin = function (
     } = opts.authorizationParams;
 
     /** Step . Generate code_challenge and state to Use on Callback for PKCE verification */
-    const code_challenge = await generateRandomHash(22);
+    const code_verifier = await generateCodeVerifier();
+    const code_challenge = await generateCodeChallengeFromVerifier(
+      code_verifier
+    );
     const code_challenge_method = "S256";
-    const nonce = await generateRandomHash(22);
-    const state = await generateRandomHash(22);
-
-    console.log({ code_challenge, nonce, state });
+    const nonce = generateRandomString(22);
+    const state = generateRandomString(22);
 
     await storage.mergeItem({
       key: AsyncStorageKey.Auth,
-      value: { auth_type, code_challenge, nonce, state },
+      value: { auth_type, code_challenge, code_verifier, nonce, state },
     });
 
     const extras =

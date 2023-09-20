@@ -65,19 +65,28 @@ const GovLoginProvider = (opts: IGovLoginProviderOptions): JSX.Element => {
     didInitialise.current = true;
     (async (): Promise<void> => {
       try {
-        console.log("here 1");
         let user: IUser | undefined;
         if (hasAuthParams() && !skipRedirectCallback) {
-          console.log("here 2");
+          /** Step . Handle Callback Url Code and State */
           const { appState } = await client.handleRedirectCallback();
+
+          /** Step . Get User Profile */
           user = await client.getUser();
+
+          /** Step . Return to original URL (Deep Link) */
           onRedirectCallback(appState, user);
         } else {
+          /** Step . Check session, if fail, redirect to Login.gov */
           await client.checkSession();
+
+          /** Step . Get User Profile */
           user = await client.getUser();
         }
+
+        /** Step . Update Client Context with User Information */
         dispatch({ type: "INITIALISED", user });
       } catch (error) {
+        /** Step . Update Client Context with Error Information */
         dispatch({ type: "ERROR", error: loginError(error) });
       }
     })();
@@ -85,8 +94,7 @@ const GovLoginProvider = (opts: IGovLoginProviderOptions): JSX.Element => {
 
   const loginWithRedirect = useCallback(
     (opts?: IRedirectLoginOptions): Promise<void> => {
-      deprecateRedirectUri(opts);
-
+      /** Step . Forward Provider Opts to LoginHook */
       return client.loginWithRedirect(opts);
     },
     [client]
@@ -110,6 +118,7 @@ const GovLoginProvider = (opts: IGovLoginProviderOptions): JSX.Element => {
       } catch (error) {
         throw tokenError(error);
       } finally {
+        /** Step . Update Client Context with User Information */
         dispatch({
           type: "GET_ACCESS_TOKEN_COMPLETE",
           user: await client.getUser(),

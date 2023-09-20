@@ -1,3 +1,46 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react-hooks/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "constructor-super": "warn",
+    "no-const-assign": "warn",
+    "no-continue": "off",
+    "no-this-before-super": "warn",
+    "no-undef": "warn",
+    "no-unreachable": "warn",
+    "no-unused-vars": "warn",
+    "quotes": ["error", "double", { "allowTemplateLiterals": true }],
+    "react-hooks/exhaustive-deps": "off",
+    "react/prop-types": "off",
+    "semi": ["error"],
+    "sort-imports": [
+      "error",
+      {
+        "ignoreCase": false,
+        "ignoreDeclarationSort": false,
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": ["none", "all", "single", "multiple"],
+        "allowSeparatedGroups": true
+      }
+    ],
+    "valid-typeof": "warn"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
 }

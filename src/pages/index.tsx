@@ -11,6 +11,7 @@ export default function Home() {
       authorizationParams={{
         acr_value: "",
         client_id: "sldkjsldf",
+        scope: "profile+email",
       }}
     >
       <div>Some text that needs protecting</div>

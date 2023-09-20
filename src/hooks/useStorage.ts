@@ -9,6 +9,7 @@ const useStorage = () => {
     for (const key in response) {
       const sObj = new String(response[key]);
       response[key] = sObj.valueOf();
+      console.log(sObj);
     }
     return response;
   };
@@ -33,7 +34,11 @@ const useStorage = () => {
         : false;
 
     if (typeof response === "string") {
-      return response.replace(/[^\w\s]/gi, "");
+      return response === "false"
+        ? false
+        : response === "true"
+        ? true
+        : response.replace(/[^\w\s]/gi, "");
     }
     return _formatResponse(response);
   };

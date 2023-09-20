@@ -1,0 +1,6 @@
+**/*.png
+**/*.jpg
+**/*.webp
+**/*.json
+**/*.css
+node_modules

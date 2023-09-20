@@ -4,8 +4,25 @@ const CODE_RE = /[?&]code=[^&]+/;
 const STATE_RE = /[?&]state=[^&]+/;
 const ERROR_RE = /[?&]error=[^&]+/;
 
+function _base64urlencode(a) {
+  let str = "";
+  const bytes = new Uint8Array(a);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    str += String.fromCharCode(bytes[i]);
+  }
+  return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
 function _dec2hex(dec) {
-  return dec.toString(16).padStart(2, "0");
+  return ("0" + dec.toString(16)).substr(-2);
+}
+
+function _sha256(plain) {
+  // returns promise ArrayBuffer
+  const encoder = new TextEncoder();
+  const data = encoder.encode(plain);
+  return window.crypto.subtle.digest("SHA-256", data);
 }
 
 export const buildQueryString = (searchParams: IStringObject): string => {
@@ -15,16 +32,22 @@ export const buildQueryString = (searchParams: IStringObject): string => {
     .join("&");
 };
 
-export const generateRandomHash = async (size?: number): Promise<string> => {
-  const encoder = new TextEncoder();
-  const arr = new Uint8Array((size || 40) / 2);
-  crypto.getRandomValues(arr);
-  const data = encoder.encode(Array.from(arr, _dec2hex).join(""));
-  const digest = await crypto.subtle.digest("SHA-256", data);
-  const base64Digest = btoa(digest);
-  // you can extract this replacing code to a function
-  return base64Digest.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
-};
+export function generateCodeVerifier() {
+  const array = new Uint32Array(56 / 2);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, _dec2hex).join("");
+}
+
+export async function generateCodeChallengeFromVerifier(v) {
+  const hashed = await _sha256(v);
+  return _base64urlencode(hashed);
+}
+
+export function generateRandomString(size = 22) {
+  const array = new Uint32Array(size / 2);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, _dec2hex).join("");
+}
 
 export const hasAuthParams = (searchParams = window.location.search): boolean =>
   (CODE_RE.test(searchParams) || ERROR_RE.test(searchParams)) &&
